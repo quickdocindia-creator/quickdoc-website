@@ -1195,7 +1195,7 @@
             </div>
 
             <div class="nav-actions">
-                <button class="btn btn-primary" onclick="navigateTo('track')">Track Order</button>
+              <button class="btn btn-outline" onclick="openLogin()">Login</button>  <button class="btn btn-primary" onclick="navigateTo('track')">Track Order</button>
                 <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -1684,30 +1684,37 @@
         });
 
         // ---- TRACKING ----
-        function trackOrder() {
-            const input = document.getElementById('orderIdInput').value.trim().toUpperCase();
-            const container = document.getElementById('orderResult');
-            const noOrder = document.getElementById('noOrder');
+      async function trackOrder() {
+    const input = document.getElementById('orderIdInput').value.trim().toUpperCase();
+    const container = document.getElementById('orderResult');
+    const noOrder = document.getElementById('noOrder');
 
-            container.innerHTML = '';
-            noOrder.style.display = 'none';
+    container.innerHTML = '';
+    noOrder.style.display = 'none';
 
-            const order = sampleOrders[input];
-            if (!order) {
-                noOrder.style.display = 'block';
-                return;
-            }
+    try {
+        // ---- FIREBASE REAL DATA ----
+        const q = query(collection(db, 'requests'), where('id', '==', input));
+        const querySnapshot = await getDocs(q);
 
+        if (querySnapshot.empty) {
+            noOrder.style.display = 'block';
+            return;
+        }
+
+        querySnapshot.forEach((doc) => {
+            const order = doc.data();
+            // Render order card using order data
             let stepsHtml = '';
-            order.steps.forEach((step) => {
+            order.steps.forEach((step, index) => {
+                const state = step.state || (index === order.currentStep ? 'active' : 'pending');
                 let dotClass = 'pending';
                 let icon = '⏳';
-                if (step.state === 'done') { dotClass = 'done';
-                    icon = '✓'; } else if (step.state === 'active') { dotClass = 'active';
-                    icon = '⏳'; }
+                if (state === 'done') { dotClass = 'done'; icon = '✓'; }
+                else if (state === 'active') { dotClass = 'active'; icon = '⏳'; }
 
                 stepsHtml += `
-                    <div class="step ${step.state === 'done' ? 'done' : ''}">
+                    <div class="step ${state === 'done' ? 'done' : ''}">
                         <div class="step-dot ${dotClass}">${icon}</div>
                         <div class="step-content">
                             <h4>${step.label}</h4>
@@ -1731,8 +1738,13 @@
                     <div class="timeline">${stepsHtml}</div>
                 </div>
             `;
-        }
-
+        });
+    } catch (error) {
+        console.error("Error tracking order:", error);
+        noOrder.innerHTML = `<p style="color:var(--red);">⚠️ Error connecting to database. Please try again later.</p>`;
+        noOrder.style.display = 'block';
+    }
+}
         // ---- INIT ----
         document.addEventListener('DOMContentLoaded', function() {
             trackOrder();
