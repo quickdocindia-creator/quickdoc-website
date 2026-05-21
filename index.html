@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuickDoc — Professional Document Services</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
         /* ===== ROOT & RESET ===== */
         :root {
@@ -882,6 +883,47 @@
             color: var(--primary);
         }
 
+        /* ===== FAQ PAGE ===== */
+        .faq-item {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .faq-item:hover {
+            box-shadow: var(--shadow-sm);
+        }
+        .faq-item .question {
+            font-weight: 600;
+            font-size: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .faq-item .question .arrow {
+            font-size: 14px;
+            color: var(--text-muted);
+            transition: var(--transition);
+        }
+        .faq-item .answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        .faq-item.open .answer {
+            max-height: 200px;
+            padding-top: 12px;
+        }
+        .faq-item.open .arrow {
+            transform: rotate(180deg);
+        }
+
         /* ===== ABOUT PAGE ===== */
         .about-hero {
             text-align: center;
@@ -949,47 +991,6 @@
             font-weight: 500;
             color: var(--text-primary);
             margin: 20px 0;
-        }
-
-        /* ===== FAQ PAGE ===== */
-        .faq-item {
-            background: var(--white);
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            padding: 20px 24px;
-            margin-bottom: 16px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-        .faq-item:hover {
-            box-shadow: var(--shadow-sm);
-        }
-        .faq-item .question {
-            font-weight: 600;
-            font-size: 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .faq-item .question .arrow {
-            font-size: 14px;
-            color: var(--text-muted);
-            transition: var(--transition);
-        }
-        .faq-item .answer {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-            color: var(--text-secondary);
-            font-size: 14px;
-            line-height: 1.6;
-        }
-        .faq-item.open .answer {
-            max-height: 200px;
-            padding-top: 12px;
-        }
-        .faq-item.open .arrow {
-            transform: rotate(180deg);
         }
 
         /* ===== FOOTER ===== */
@@ -1195,7 +1196,8 @@
             </div>
 
             <div class="nav-actions">
-              <button class="btn btn-outline" onclick="openLogin()">Login</button>  <button class="btn btn-primary" onclick="navigateTo('track')">Track Order</button>
+                <button class="btn btn-outline" onclick="openLogin()">Login</button>
+                <button class="btn btn-primary" onclick="navigateTo('track')">Track Order</button>
                 <button class="hamburger" id="hamburger" aria-label="Toggle menu">
                     <span></span><span></span><span></span>
                 </button>
@@ -1458,7 +1460,7 @@
             <h2 class="section-title">From the <span>Blog</span></h2>
             <p class="section-desc">Insights, guides, and news about government documents in India.</p>
             <div class="blog-grid">
-                <div class="blog-card">
+                <div class="blog-card" onclick="openBlog('aadhaar')">
                     <div class="thumb">📄</div>
                     <div class="body">
                         <div class="date">May 15, 2026</div>
@@ -1467,7 +1469,7 @@
                         <span class="read">Read more →</span>
                     </div>
                 </div>
-                <div class="blog-card">
+                <div class="blog-card" onclick="openBlog('pan')">
                     <div class="thumb">💳</div>
                     <div class="body">
                         <div class="date">May 10, 2026</div>
@@ -1476,7 +1478,7 @@
                         <span class="read">Read more →</span>
                     </div>
                 </div>
-                <div class="blog-card">
+                <div class="blog-card" onclick="openBlog('itr')">
                     <div class="thumb">📊</div>
                     <div class="body">
                         <div class="date">May 5, 2026</div>
@@ -1493,7 +1495,7 @@
     <div class="page" id="about">
         <div class="container" style="padding-top:30px;">
             <div class="about-hero">
-                <!-- REPLACE WITH YOUR IMAGE: <img class="avatar" src="arsh.jpg" alt="Arsh Mehra" /> -->
+                <!-- <img class="avatar" src="arsh.jpg" alt="Arsh Mehra" /> -->
                 <div class="avatar-placeholder">🧑</div>
                 <h2>Arsh Mehra</h2>
                 <div class="title">Founder, QuickDoc</div>
@@ -1616,47 +1618,38 @@
         💬
     </a>
 
+    <!-- ========== LOGIN MODAL ========== -->
+    <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:var(--white); border-radius:var(--radius); max-width:400px; width:100%; padding:32px; position:relative; animation:slideUp 0.3s ease;">
+            <button onclick="closeLogin()" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">✕</button>
+            <h2 style="font-family:var(--font-display); font-size:24px; margin-bottom:8px;">Login</h2>
+            <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Enter your phone number to verify.</p>
+            <div id="recaptcha-container"></div>
+            <div style="margin-bottom:16px;">
+                <label style="display:block; font-size:14px; font-weight:600; margin-bottom:6px;">Phone Number</label>
+                <input type="tel" id="phone" placeholder="+91 98765 43210" style="width:100%; padding:12px; border:1.5px solid var(--border); border-radius:8px; font-size:16px;">
+            </div>
+            <button onclick="sendOtp()" style="width:100%; padding:12px; background:var(--primary); color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer;">Send OTP</button>
+            <div id="otpSection" style="display:none; margin-top:16px;">
+                <label style="display:block; font-size:14px; font-weight:600; margin-bottom:6px;">Enter OTP</label>
+                <input type="text" id="otpInput" placeholder="4-digit OTP" style="width:100%; padding:12px; border:1.5px solid var(--border); border-radius:8px; font-size:16px; text-align:center; letter-spacing:4px;">
+                <button onclick="verifyOtp()" style="width:100%; padding:12px; background:var(--green); color:white; border:none; border-radius:8px; font-size:16px; font-weight:600; cursor:pointer; margin-top:10px;">Verify OTP</button>
+            </div>
+            <p style="font-size:12px; color:var(--text-muted); text-align:center; margin-top:12px;">🔒 We never share your number.</p>
+        </div>
+    </div>
+
+    <!-- ========== BLOG MODAL ========== -->
+    <div id="blogModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center; padding:20px;">
+        <div style="background:var(--white); border-radius:var(--radius); max-width:600px; width:100%; padding:32px; position:relative;">
+            <button onclick="closeBlog()" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">✕</button>
+            <h2 id="blogTitle" style="font-family:var(--font-display); font-size:28px; margin-bottom:12px;"></h2>
+            <div id="blogContent" style="font-size:16px; line-height:1.8; color:var(--text-secondary);"></div>
+        </div>
+    </div>
+
     <!-- ========== JAVASCRIPT ========== -->
     <script>
-        // ---- SAMPLE ORDERS ----
-        const sampleOrders = {
-            'KAI-2024-0892': {
-                id: 'KAI-2024-0892',
-                service: 'Aadhaar Address Update',
-                date: 'May 7, 2024',
-                status: 'Processing',
-                statusClass: 'badge-accent',
-                steps: [
-                    { label: 'Request Received', desc: 'Payment confirmed — ₹99 received', time: 'May 7 • 9:45 AM',
-                        state: 'done' },
-                    { label: 'Documents Verified', desc: 'Aadhaar and address proof verified', time: 'May 7 • 10:20 AM',
-                        state: 'done' },
-                    { label: 'UIDAI Portal Submission', desc: 'Form submitted — URN generated', time: 'Expected: Today',
-                        state: 'active' },
-                    { label: 'UIDAI Processing', desc: 'Awaiting government confirmation', time: 'Expected: 3–7 days',
-                        state: 'pending' },
-                    { label: 'Completed', desc: 'Updated Aadhaar will be delivered', time: 'Expected: May 14',
-                        state: 'pending' }
-                ]
-            },
-            'KAI-2024-0756': {
-                id: 'KAI-2024-0756',
-                service: 'ITR Filing FY 2023–24',
-                date: 'April 20, 2024',
-                status: 'Completed',
-                statusClass: 'badge-green',
-                steps: [
-                    { label: 'Request Received', desc: 'Payment confirmed — ₹199 received', time: 'Apr 20 • 11:00 AM',
-                        state: 'done' },
-                    { label: 'Documents Reviewed', desc: 'Form 16 verified', time: 'Apr 20 • 2:30 PM', state: 'done' },
-                    { label: 'ITR Prepared', desc: 'ITR-1 ready — approved by user', time: 'Apr 20 • 5:00 PM',
-                        state: 'done' },
-                    { label: 'Filed Successfully', desc: 'Acknowledgement: ITRV20240420XY', time: 'Apr 20 • 6:15 PM',
-                        state: 'done' }
-                ]
-            }
-        };
-
         // ---- NAVIGATION ----
         function navigateTo(pageId) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -1683,68 +1676,170 @@
             document.getElementById('navLinks').classList.toggle('open');
         });
 
-        // ---- TRACKING ----
-      async function trackOrder() {
-    const input = document.getElementById('orderIdInput').value.trim().toUpperCase();
-    const container = document.getElementById('orderResult');
-    const noOrder = document.getElementById('noOrder');
-
-    container.innerHTML = '';
-    noOrder.style.display = 'none';
-
-    try {
-        // ---- FIREBASE REAL DATA ----
-        const q = query(collection(db, 'requests'), where('id', '==', input));
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-            noOrder.style.display = 'block';
-            return;
+        // ---- LOGIN MODAL ----
+        function openLogin() {
+            document.getElementById('loginModal').style.display = 'flex';
         }
 
-        querySnapshot.forEach((doc) => {
-            const order = doc.data();
-            // Render order card using order data
-            let stepsHtml = '';
-            order.steps.forEach((step, index) => {
-                const state = step.state || (index === order.currentStep ? 'active' : 'pending');
-                let dotClass = 'pending';
-                let icon = '⏳';
-                if (state === 'done') { dotClass = 'done'; icon = '✓'; }
-                else if (state === 'active') { dotClass = 'active'; icon = '⏳'; }
+        function closeLogin() {
+            document.getElementById('loginModal').style.display = 'none';
+        }
 
-                stepsHtml += `
-                    <div class="step ${state === 'done' ? 'done' : ''}">
-                        <div class="step-dot ${dotClass}">${icon}</div>
-                        <div class="step-content">
-                            <h4>${step.label}</h4>
-                            <p>${step.desc}</p>
-                            <div class="time">${step.time}</div>
-                        </div>
-                    </div>
-                `;
-            });
+        // ---- REAL FIREBASE PHONE AUTH ----
+        function sendOtp() {
+            const phone = document.getElementById('phone').value.trim();
+            if (phone.length < 10) {
+                alert('⚠️ Please enter a valid 10-digit phone number.');
+                return;
+            }
 
-            container.innerHTML = `
-                <div class="order-card">
-                    <div class="top">
-                        <div class="info">
-                            <div class="order-id">#${order.id}</div>
-                            <div class="order-service">${order.service}</div>
-                            <div class="order-date">📅 Applied: ${order.date}</div>
+            const formattedPhone = phone.startsWith('+91') ? phone : '+91' + phone;
+
+            if (!window.recaptchaVerifier) {
+                window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => {
+                        console.log('reCAPTCHA solved');
+                    },
+                    'expired-callback': () => {
+                        console.log('reCAPTCHA expired');
+                    }
+                }, window.auth);
+            }
+
+            signInWithPhoneNumber(window.auth, formattedPhone, window.recaptchaVerifier)
+                .then((confirmationResult) => {
+                    window.confirmationResult = confirmationResult;
+                    alert('📱 OTP sent to ' + formattedPhone);
+                    document.getElementById('otpSection').style.display = 'block';
+                })
+                .catch((error) => {
+                    console.error('Error sending OTP:', error);
+                    alert('❌ Error sending OTP: ' + error.message);
+                });
+        }
+
+        function verifyOtp() {
+            const otp = document.getElementById('otpInput').value.trim();
+            if (otp.length < 4) {
+                alert('⚠️ Please enter the 4-digit OTP.');
+                return;
+            }
+
+            window.confirmationResult.confirm(otp)
+                .then((result) => {
+                    const user = result.user;
+                    alert('✅ Login successful! Welcome, ' + user.phoneNumber);
+                    closeLogin();
+                    location.reload();
+                })
+                .catch((error) => {
+                    console.error('Error verifying OTP:', error);
+                    alert('❌ Invalid OTP. Please try again.');
+                });
+        }
+
+        // ---- TRACK ORDER (Real Firestore) ----
+        async function trackOrder() {
+            const input = document.getElementById('orderIdInput').value.trim().toUpperCase();
+            const container = document.getElementById('orderResult');
+            const noOrder = document.getElementById('noOrder');
+
+            container.innerHTML = '';
+            noOrder.style.display = 'none';
+
+            try {
+                const q = query(collection(db, 'requests'), where('id', '==', input));
+                const snapshot = await getDocs(q);
+
+                if (snapshot.empty) {
+                    noOrder.style.display = 'block';
+                    return;
+                }
+
+                snapshot.forEach((doc) => {
+                    const order = doc.data();
+                    let stepsHtml = '';
+                    order.steps.forEach((step, index) => {
+                        const state = step.state || (index === order.currentStep ? 'active' :
+                        'pending');
+                        let dotClass = 'pending';
+                        let icon = '⏳';
+                        if (state === 'done') {
+                            dotClass = 'done';
+                            icon = '✓';
+                        } else if (state === 'active') {
+                            dotClass = 'active';
+                            icon = '⏳';
+                        }
+                        stepsHtml += `
+                            <div class="step ${state === 'done' ? 'done' : ''}">
+                                <div class="step-dot ${dotClass}">${icon}</div>
+                                <div class="step-content">
+                                    <h4>${step.label}</h4>
+                                    <p>${step.desc}</p>
+                                    <div class="time">${step.time}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    container.innerHTML = `
+                        <div class="order-card">
+                            <div class="top">
+                                <div class="info">
+                                    <div class="order-id">#${order.id}</div>
+                                    <div class="order-service">${order.service}</div>
+                                    <div class="order-date">📅 Applied: ${order.date}</div>
+                                </div>
+                                <span class="status-badge ${order.statusClass}">${order.status}</span>
+                            </div>
+                            <div class="timeline">${stepsHtml}</div>
                         </div>
-                        <span class="status-badge ${order.statusClass}">${order.status}</span>
-                    </div>
-                    <div class="timeline">${stepsHtml}</div>
-                </div>
-            `;
+                    `;
+                });
+            } catch (error) {
+                console.error('Error tracking order:', error);
+                noOrder.innerHTML =
+                    `<p style="color:var(--red);">⚠️ Error connecting to database. Please try again later.</p>`;
+                noOrder.style.display = 'block';
+            }
+        }
+
+        // ---- BLOG ----
+        const blogData = {
+            'aadhaar': {
+                title: 'How to Update Your Aadhaar Address Online',
+                content: 'Step-by-step guide to change your Aadhaar address without visiting an agent. <br><br> <b>Step 1:</b> Log in to UIDAI portal... <br> <b>Step 2:</b> Upload address proof... <br> <b>Step 3:</b> Verify with OTP... <br> <b>Step 4:</b> Submit and track URN...'
+            },
+            'pan': {
+                title: 'PAN Correction: Common Mistakes to Avoid',
+                content: 'Wrong name or DOB? Here\'s how to fix it quickly. <br><br> <b>Common Mistake 1:</b> Not having proper ID proof... <br> <b>Common Mistake 2:</b> Submitting without signature...'
+            },
+            'itr': {
+                title: 'ITR Filing for Students & Freelancers',
+                content: 'Do you need to file tax returns? A simple guide. <br><br> <b>Who needs to file?</b> Annual income above ₹2.5L... <br> <b>Documents needed:</b> Form 16, Bank statements...'
+            }
+        };
+
+        function openBlog(id) {
+            const data = blogData[id];
+            if (data) {
+                document.getElementById('blogTitle').textContent = data.title;
+                document.getElementById('blogContent').innerHTML = data.content;
+                document.getElementById('blogModal').style.display = 'flex';
+            }
+        }
+
+        function closeBlog() {
+            document.getElementById('blogModal').style.display = 'none';
+        }
+
+        // ---- NAVBAR SCROLL ----
+        window.addEventListener('scroll', function() {
+            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
         });
-    } catch (error) {
-        console.error("Error tracking order:", error);
-        noOrder.innerHTML = `<p style="color:var(--red);">⚠️ Error connecting to database. Please try again later.</p>`;
-        noOrder.style.display = 'block';
-    }
-}
+
         // ---- INIT ----
         document.addEventListener('DOMContentLoaded', function() {
             trackOrder();
@@ -1753,34 +1848,6 @@
         document.getElementById('orderIdInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') trackOrder();
         });
-
-        // ---- NAVBAR SCROLL ----
-        window.addEventListener('scroll', function() {
-            document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 20);
-        });
     </script>
-<script type="module">
-  // Import the functions you need from the SDKs you need
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
-  // TODO: Add SDKs for Firebase products that you want to use
-  // https://firebase.google.com/docs/web/setup#available-libraries
-
-  // Your web app's Firebase configuration
-  // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-  const firebaseConfig = {
-    apiKey: "AIzaSyDB8b6a8xq3TDBTNF1jBBHulmXh-UqVyPw",
-    authDomain: "quickdocin.firebaseapp.com",
-    projectId: "quickdocin",
-    storageBucket: "quickdocin.firebasestorage.app",
-    messagingSenderId: "746380691683",
-    appId: "1:746380691683:web:b5304f3a464b52326cddd6",
-    measurementId: "G-KLD289124L"
-  };
-
-  // Initialize Firebase
-  const app = initializeApp(firebaseConfig);
-  const analytics = getAnalytics(app);
-</script>
 </body>
 </html>
