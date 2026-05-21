@@ -1920,6 +1920,62 @@
         document.getElementById('orderIdInput').addEventListener('keydown', function(e) {
             if (e.key === 'Enter') trackOrder();
         });
-    </script>
+   function sendOtp() {
+    try {
+        console.log("🟢 sendOtp function called"); // Debug log 1
+
+        const phoneInput = document.getElementById('phone');
+        const phoneNumber = phoneInput.value.trim();
+
+        if (phoneNumber.length < 10) {
+            alert('⚠️ Valid 10-digit number enter karein');
+            return;
+        }
+
+        const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : '+91' + phoneNumber;
+        console.log("📞 Formatted Phone:", formattedPhone); // Debug log 2
+
+        // Check if Firebase Auth is available
+        if (!window.auth) {
+            alert('❌ Error: Firebase Auth not initialized. Refresh the page.');
+            return;
+        }
+
+        // Initialize reCAPTCHA (Only if not already done)
+        if (!window.recaptchaVerifier) {
+            console.log("🤖 Creating reCAPTCHA..."); // Debug log 3
+            try {
+                window.recaptchaVerifier = new window.RecaptchaVerifier('recaptcha-container', {
+                    'size': 'invisible',
+                    'callback': (response) => console.log('reCAPTCHA solved'),
+                    'expired-callback': () => console.log('reCAPTCHA expired')
+                }, window.auth);
+                console.log("✅ reCAPTCHA created.");
+            } catch (err) {
+                alert('❌ Error creating reCAPTCHA: ' + err.message);
+                return;
+            }
+        }
+
+        // Send OTP
+        console.log("📤 Sending OTP..."); // Debug log 4
+        window.signInWithPhoneNumber(window.auth, formattedPhone, window.recaptchaVerifier)
+            .then((confirmationResult) => {
+                window.confirmationResult = confirmationResult;
+                alert('📱 OTP sent to ' + formattedPhone);
+                document.getElementById('otpSection').style.display = 'block';
+                console.log("✅ OTP sent successfully."); // Debug log 5
+            })
+            .catch((error) => {
+                console.error('❌ Firestore Error:', error);
+                alert('❌ Error: ' + error.message);
+            });
+
+    } catch (error) {
+        // This catch block ensures ANY error is shown to you
+        alert('🔥 CRITICAL ERROR: ' + error.message);
+        console.error(error);
+    }
+}
 </body>
 </html>
