@@ -5,9 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>QuickDoc — Professional Document Services</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet" />
+    <!-- Razorpay Script -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <style>
-        /* ===== ROOT & RESET ===== */
+        /* ===== ROOT & RESET (Company Level) ===== */
         :root {
             --white: #ffffff;
             --off-white: #f8f9fc;
@@ -34,9 +35,7 @@
             --font-display: 'Playfair Display', serif;
         }
 
-        *,
-        *::before,
-        *::after {
+        * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
@@ -63,14 +62,18 @@
             cursor: pointer;
             border: none;
             outline: none;
+            transition: var(--transition);
+        }
+        button:active {
+            transform: scale(0.97);
         }
         input,
         textarea,
         select {
             font-family: inherit;
             outline: none;
+            transition: var(--transition);
         }
-
         img {
             max-width: 100%;
             display: block;
@@ -1176,7 +1179,7 @@
 </head>
 <body>
 
-    <!-- ========== NAVBAR ========== -->
+    <!-- ========== NAVBAR (COMPLETE) ========== -->
     <nav class="navbar" id="navbar">
         <div class="nav-inner">
             <div class="nav-logo">
@@ -1205,7 +1208,7 @@
         </div>
     </nav>
 
-    <!-- ========== HOME PAGE ========== -->
+    <!-- ========== PAGE: HOME ========== -->
     <div class="page active" id="home">
         <div class="container">
             <div class="hero">
@@ -1286,7 +1289,7 @@
         </div>
     </div>
 
-    <!-- ========== SERVICES PAGE ========== -->
+    <!-- ========== PAGE: SERVICES ========== -->
     <div class="page" id="services">
         <div class="container" style="padding-top:30px;">
             <div class="section-label">Our Services</div>
@@ -1339,7 +1342,7 @@
         </div>
     </div>
 
-    <!-- ========== HOW IT WORKS PAGE ========== -->
+    <!-- ========== PAGE: HOW IT WORKS ========== -->
     <div class="page" id="how">
         <div class="container" style="padding-top:30px;">
             <div class="section-label">Process</div>
@@ -1374,7 +1377,7 @@
         </div>
     </div>
 
-    <!-- ========== PRICING PAGE ========== -->
+    <!-- ========== PAGE: PRICING ========== -->
     <div class="page" id="pricing">
         <div class="container" style="padding-top:30px;">
             <div class="section-label">Pricing</div>
@@ -1431,7 +1434,7 @@
         </div>
     </div>
 
-    <!-- ========== TRACK PAGE ========== -->
+    <!-- ========== PAGE: TRACK ========== -->
     <div class="page" id="track">
         <div class="container" style="padding-top:30px;">
             <div class="track-header">
@@ -1453,7 +1456,7 @@
         </div>
     </div>
 
-    <!-- ========== BLOG PAGE ========== -->
+    <!-- ========== PAGE: BLOG ========== -->
     <div class="page" id="blog">
         <div class="container" style="padding-top:30px;">
             <div class="section-label">Latest Updates</div>
@@ -1491,7 +1494,7 @@
         </div>
     </div>
 
-    <!-- ========== ABOUT PAGE ========== -->
+    <!-- ========== PAGE: ABOUT ========== -->
     <div class="page" id="about">
         <div class="container" style="padding-top:30px;">
             <div class="about-hero">
@@ -1513,7 +1516,7 @@
         </div>
     </div>
 
-    <!-- ========== FAQ PAGE ========== -->
+    <!-- ========== PAGE: FAQ ========== -->
     <div class="page" id="faq">
         <div class="container" style="padding-top:30px;">
             <div class="section-label">Frequently Asked Questions</div>
@@ -1618,13 +1621,16 @@
         💬
     </a>
 
-    <!-- ========== LOGIN MODAL ========== -->
+    <!-- ========== LOGIN MODAL (RECAPTCHA IS KEY) ========== -->
     <div id="loginModal" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:2000; align-items:center; justify-content:center; padding:20px;">
         <div style="background:var(--white); border-radius:var(--radius); max-width:400px; width:100%; padding:32px; position:relative; animation:slideUp 0.3s ease;">
             <button onclick="closeLogin()" style="position:absolute; top:12px; right:16px; background:none; border:none; font-size:24px; cursor:pointer; color:var(--text-muted);">✕</button>
             <h2 style="font-family:var(--font-display); font-size:24px; margin-bottom:8px;">Login</h2>
             <p style="font-size:14px; color:var(--text-muted); margin-bottom:20px;">Enter your phone number to verify.</p>
+            
+            <!-- 🔥 CRITICAL FIX: RECAPTCHA CONTAINER MUST BE INSIDE THE MODAL -->
             <div id="recaptcha-container"></div>
+            
             <div style="margin-bottom:16px;">
                 <label style="display:block; font-size:14px; font-weight:600; margin-bottom:6px;">Phone Number</label>
                 <input type="tel" id="phone" placeholder="+91 98765 43210" style="width:100%; padding:12px; border:1.5px solid var(--border); border-radius:8px; font-size:16px;">
@@ -1648,7 +1654,48 @@
         </div>
     </div>
 
-    <!-- ========== JAVASCRIPT ========== -->
+    <!-- ========== JAVASCRIPT (ALL LOGIC) ========== -->
+    
+    <!-- Firebase SDK (Module Script) -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-analytics.js";
+        import { getAuth } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+        import { getFirestore, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-firestore.js";
+        import { getStorage } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-storage.js";
+        import { RecaptchaVerifier, signInWithPhoneNumber } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-auth.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDB8a6a8xq3TDBTNF1jBBHuImXh-UqVyPw",
+            authDomain: "quickdocin.firebaseapp.com",
+            projectId: "quickdocin",
+            storageBucket: "quickdocin.firebasestorage.app",
+            messagingSenderId: "746380691683",
+            appId: "1:746380691683:web:b5304f3a464b52326cddd6",
+            measurementId: "G-KLD289124L"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+
+        // Expose to the rest of the page
+        window.auth = auth;
+        window.db = db;
+        window.storage = storage;
+        window.RecaptchaVerifier = RecaptchaVerifier;
+        window.signInWithPhoneNumber = signInWithPhoneNumber;
+        window.collection = collection;
+        window.query = query;
+        window.where = where;
+        window.getDocs = getDocs;
+
+        console.log("Firebase initialized!");
+    </script>
+
+    <!-- Standard Script (Login, Navigation, Tracking) -->
     <script>
         // ---- NAVIGATION ----
         function navigateTo(pageId) {
@@ -1680,21 +1727,30 @@
         function openLogin() {
             document.getElementById('loginModal').style.display = 'flex';
         }
-
         function closeLogin() {
             document.getElementById('loginModal').style.display = 'none';
         }
 
-        // ---- REAL FIREBASE PHONE AUTH ----
+        // ---- REAL FIREBASE PHONE AUTH (OTP) ----
         function sendOtp() {
-            const phone = document.getElementById('phone').value.trim();
-            if (phone.length < 10) {
+            // Make sure Firebase globals are available
+            if (!window.auth) {
+                alert('Firebase not initialized. Check console for errors.');
+                return;
+            }
+
+            const phoneInput = document.getElementById('phone');
+            const phoneNumber = phoneInput.value.trim();
+
+            if (phoneNumber.length < 10) {
                 alert('⚠️ Please enter a valid 10-digit phone number.');
                 return;
             }
 
-            const formattedPhone = phone.startsWith('+91') ? phone : '+91' + phone;
+            // Add +91 if not present
+            const formattedPhone = phoneNumber.startsWith('+91') ? phoneNumber : '+91' + phoneNumber;
 
+            // Initialize reCAPTCHA (only once)
             if (!window.recaptchaVerifier) {
                 window.recaptchaVerifier = new RecaptchaVerifier('recaptcha-container', {
                     'size': 'invisible',
@@ -1707,10 +1763,12 @@
                 }, window.auth);
             }
 
+            // Send OTP
             signInWithPhoneNumber(window.auth, formattedPhone, window.recaptchaVerifier)
                 .then((confirmationResult) => {
                     window.confirmationResult = confirmationResult;
                     alert('📱 OTP sent to ' + formattedPhone);
+                    // Show OTP input field
                     document.getElementById('otpSection').style.display = 'block';
                 })
                 .catch((error) => {
@@ -1720,7 +1778,14 @@
         }
 
         function verifyOtp() {
-            const otp = document.getElementById('otpInput').value.trim();
+            if (!window.confirmationResult) {
+                alert('Please send OTP first.');
+                return;
+            }
+
+            const otpInput = document.getElementById('otpInput');
+            const otp = otpInput.value.trim();
+
             if (otp.length < 4) {
                 alert('⚠️ Please enter the 4-digit OTP.');
                 return;
@@ -1739,7 +1804,7 @@
                 });
         }
 
-        // ---- TRACK ORDER (Real Firestore) ----
+        // ---- TRACK ORDER (Firestore) ----
         async function trackOrder() {
             const input = document.getElementById('orderIdInput').value.trim().toUpperCase();
             const container = document.getElementById('orderResult');
@@ -1748,8 +1813,14 @@
             container.innerHTML = '';
             noOrder.style.display = 'none';
 
+            if (!window.db) {
+                noOrder.innerHTML = `<p style="color:var(--red);">⚠️ Database not initialized. Check console.</p>`;
+                noOrder.style.display = 'block';
+                return;
+            }
+
             try {
-                const q = query(collection(db, 'requests'), where('id', '==', input));
+                const q = query(collection(window.db, 'requests'), where('id', '==', input));
                 const snapshot = await getDocs(q);
 
                 if (snapshot.empty) {
@@ -1842,6 +1913,7 @@
 
         // ---- INIT ----
         document.addEventListener('DOMContentLoaded', function() {
+            // Tracks the default order on load
             trackOrder();
         });
 
